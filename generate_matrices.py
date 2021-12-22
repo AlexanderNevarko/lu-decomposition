@@ -28,6 +28,7 @@ def main():
 
 
 def generate_matrix(size):
+    # Subtract identity matrix to make it invertible
     mat = np.random.random_sample((size, size)) - np.eye(size)
     return mat
 
