@@ -5,6 +5,8 @@
 #include "profile.h"
 #include "reader.h"
 #include "sequential.h"
+#include "matrix_operations.h"
+
 
 int main(int argc, char** argv) {
     if (argc != 3) {
@@ -13,21 +15,22 @@ int main(int argc, char** argv) {
     }
 
 
-    const std::vector<std::vector<double>>& matrix = readMatrix(argv[1]);
-    std::vector<std::vector<double>> l(matrix.size(),
-                                       std::vector<double> (matrix[0].size()));
-    std::vector<std::vector<double>> u(matrix.size(),
-                                       std::vector<double> (matrix[0].size()));
+    matrix mat = readMatrix(argv[1]);
+    // need to avoid dividing by zero
+    pivotize(mat);
+    matrix l(mat.size(), std::vector<double> (mat[0].size()));
+    matrix u(mat.size(), std::vector<double> (mat[0].size()));
+
     // sequential
     {
         std::string log_filename = argv[2];
         log_filename += "_";
-        log_filename += std::to_string(matrix.size());
+        log_filename += std::to_string(mat.size());
         log_filename += "_sequential.txt";
 
         LOG_DURATION(log_filename);
 
-        sequential::decompose(matrix, l, u);
+        sequential::decompose(mat, l, u);
 
     }
 }
