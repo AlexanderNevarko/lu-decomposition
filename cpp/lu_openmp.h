@@ -9,19 +9,33 @@ void decompose(const std::vector<std::vector<double>>& matrix,
                std::vector<std::vector<double>>& l,
                std::vector<std::vector<double>>& u) {
 
-	int i = 0, j = 0, k = 0;
+    int n = matrix.size();
+
+#pragma omp parallel shared(matrix,l,u)
+	for(int j = 0; j < n; j++) {
+
+        l[j][j] = 1;
 #pragma omp for
-	for(j = 0; j < matrix.size() - 1; j++) {
-        for(i = j + 1; i < matrix.size(); i++) {
-
-            double factor = matrix[i][j] / matrix[j][j];
-
-            for(k = 0; k < matrix.size(); k++) {
-            	u[i][k]= matrix[i][k] - (matrix[j][k] * factor);
+        for (int i = 0; i <= j; ++i) {
+            int sum = 0;
+            for (int k = 0; k < i; ++k) {
+                sum += u[k][j] * l[i][k];
             }
-            l[i][j] = factor;
+            u[i][j] = matrix[i][j] - sum;
+
+        }
+#pragma omp for
+        for (int i = j; i < n; ++i) {
+            int sum = 0;
+            for (int k = 0; k < j; ++k) {
+                sum += u[k][j] * l[i][k];
+            }
+            if (u[j][i] == 0) u[j][i] = 0.0001;
+            l[i][j] = (matrix[i][j] - sum) / u[j][j];
+
         }
     }
 }
 
-} // namespace lu_openmp
+
+} // namespace lu_ penmp

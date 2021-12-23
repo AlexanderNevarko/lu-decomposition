@@ -8,16 +8,27 @@ void decompose(const std::vector<std::vector<double>>& matrix,
                std::vector<std::vector<double>>& l,
                std::vector<std::vector<double>>& u) {
 
-	int i = 0, j = 0, k = 0;
-	for(j = 0; j < matrix.size() - 1; j++) {
-        for(i = j + 1; i < matrix.size(); i++) {
+    int n = matrix.size();
 
-            double factor = matrix[i][j] / matrix[j][j];
+	for(int j = 0; j < n; j++) {
 
-            for(k = 0; k < matrix.size(); k++) {
-            	u[i][k]= matrix[i][k] - (matrix[j][k] * factor);
+        l[j][j] = 1;
+        for (int i = 0; i <= j; ++i) {
+            int sum = 0;
+            for (int k = 0; k < i; ++k) {
+                sum += u[k][j] * l[i][k];
             }
-            l[i][j] = factor;
+            u[i][j] = matrix[i][j] - sum;
+
+        }
+        for (int i = j; i < n; ++i) {
+            int sum = 0;
+            for (int k = 0; k < j; ++k) {
+                sum += u[k][j] * l[i][k];
+            }
+            if (u[j][i] == 0) u[j][i] = 0.0001;
+            l[i][j] = (matrix[i][j] - sum) / u[j][j];
+
         }
     }
 }
