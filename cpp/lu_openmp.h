@@ -13,31 +13,37 @@ void decompose(const std::vector<std::vector<double>>& matrix,
     int n = matrix.size();
 
     omp_set_num_threads(nthread);
-#pragma omp parallel shared(matrix,l,u)
-	for(int j = 0; j < n; j++) {
 
-        l[j][j] = 1;
-#pragma omp for
-        for (int i = 0; i <= j; ++i) {
-            int sum = 0;
-            for (int k = 0; k < i; ++k) {
-                sum += u[k][j] * l[i][k];
+    #pragma omp parallel shared(matrix,l,u)
+    for (int i = 0; i < n; i++) {
+
+        #pragma omp for
+        for (int j = 0; j < n; j++) {
+            if (j < i) {
+                l[j][i] = 0;
+            } else {
+                l[j][i] = matrix[j][i];
+                for (int k = 0; k < i; k++) {
+                    l[j][i] = l[j][i] - l[j][k] * u[k][i];
+                }
             }
-            u[i][j] = matrix[i][j] - sum;
-
         }
-#pragma omp for
-        for (int i = j; i < n; ++i) {
-            int sum = 0;
-            for (int k = 0; k < j; ++k) {
-                sum += u[k][j] * l[i][k];
-            }
-            if (u[j][i] == 0) u[j][i] = 0.0001;
-            l[i][j] = (matrix[i][j] - sum) / u[j][j];
 
+        #pragma omp for
+        for (int j = 0; j < n; j++) {
+            if (j < i) {
+                u[i][j] = 0;
+            } else if (j == i) {
+                u[i][j] = 1;
+            } else {
+                u[i][j] = matrix[i][j] / l[i][i];
+                for (int k = 0; k < i; k++) {
+                    u[i][j] = u[i][j] - ((l[i][k] * u[k][j]) / l[i][i]);
+                }
+            }
         }
     }
 }
 
 
-} // namespace lu_ penmp
+} // namespace lu_openmp

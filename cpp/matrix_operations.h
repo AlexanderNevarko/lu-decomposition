@@ -5,6 +5,7 @@
 using matrix = std::vector<std::vector<double>>;
 
 void printMatrix(const matrix& mat) {
+    std::cout.precision(2);
     for (const auto& row : mat) {
         for (const double val : row) {
             std::cout << val << "\t";

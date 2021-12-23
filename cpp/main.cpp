@@ -34,7 +34,6 @@ int main(int argc, char** argv) {
     {
         LOG_DURATION(log_filename + "_sequential.txt");
         sequential::decompose(mat, l, u);
-
     }
 
     // openmp
