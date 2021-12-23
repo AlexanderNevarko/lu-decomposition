@@ -1,6 +1,9 @@
 package lu
 
-import "fmt"
+import (
+	"fmt"
+	"time"
+)
 
 type Matrix [][]float64
 
@@ -64,11 +67,12 @@ func (m1 Matrix) Mul(m2 Matrix) Matrix {
 	return r
 }
 
-func (a Matrix) LU() (l, u, p Matrix) {
+func (a Matrix) LU() (l, u, p Matrix, elapsed time.Duration) {
 	l = Zero(len(a))
 	u = Zero(len(a))
 	p = a.Pivotize()
 	a = p.Mul(a)
+	start := time.Now()
 	for j := range a {
 		l[j][j] = 1
 		for i := 0; i <= j; i++ {
@@ -86,5 +90,6 @@ func (a Matrix) LU() (l, u, p Matrix) {
 			l[i][j] = (a[i][j] - sum) / u[j][j]
 		}
 	}
+	elapsed = time.Since(start)
 	return
 }

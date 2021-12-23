@@ -78,18 +78,42 @@ func readMatrix(name string) (lu.Matrix, error) {
 
 func main() {
 	args := os.Args[1:]
-	method := args[0]
-	matFile := args[1]
+	matFile := args[0]
+	method := args[1]
 	fmt.Println(method)
 	fmt.Println(matFile)
 	mat, err := readMatrix(matFile)
 	if err != nil {
 		log.Fatal(err)
 	}
-	l, u, p := mat.LU()
-	l.Print("l")
-	u.Print("u")
-	p.Print("p")
+	if method == "sequential" {
+		_, _, _, dt := mat.LU()
+		logFile, err := os.OpenFile(fmt.Sprintf("logs/go_sequential_%d", len(mat)), os.O_WRONLY|os.O_CREATE, 0666)
+		if err != nil {
+			log.Fatal(err)
+		}
+		logFile.WriteString(fmt.Sprintf("%s", dt))
+		logFile.Close()
+		// l, u, p := mat.LU()
+		// l.Print("l")
+		// u.Print("u")
+		// p.Print("p")
+	} else if method == "concurrent" {
+		n, _ := strconv.Atoi(args[2])
+		_, _, _, dt := mat.LUconcurrent(n)
+		logFile, err := os.OpenFile(fmt.Sprintf("logs/go_concurrent_%d_%d", n, len(mat)), os.O_WRONLY|os.O_CREATE, 0666)
+		if err != nil {
+			log.Fatal(err)
+		}
+		logFile.WriteString(fmt.Sprintf("%s", dt))
+		logFile.Close()
+		// l, u, p := mat.LUconcurrent(n)
+		// l.Print("l")
+		// u.Print("u")
+		// p.Print("p")
+	} else {
+		fmt.Printf("Unsupported method %s\n", method)
+	}
 }
 
 // func showLU(a matrix) {
