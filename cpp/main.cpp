@@ -12,8 +12,8 @@
 
 
 int main(int argc, char** argv) {
-    if (argc != 3) {
-        std::cerr << "Expected filename and log filename as command line arguments" << std::endl;
+    if (argc != 4) {
+        std::cerr << "Expected filename and log filename  and thread_num as command line arguments" << std::endl;
         exit(1);
     }
 
@@ -24,6 +24,7 @@ int main(int argc, char** argv) {
     matrix l(mat.size(), std::vector<double> (mat[0].size()));
     matrix u(mat.size(), std::vector<double> (mat[0].size()));
 
+    int nthread = std::atoi(argv[3]);
 
     std::string log_filename = argv[2];
     log_filename += "_";
@@ -38,13 +39,13 @@ int main(int argc, char** argv) {
 
     // openmp
     {
-        LOG_DURATION(log_filename + "_openmp.txt");
-        lu_openmp::decompose(mat, l, u);
+        LOG_DURATION(log_filename + "_openmp_" + argv[3] + ".txt");
+        lu_openmp::decompose(mat, l, u, nthread);
     }
 
     // tbb
     {
-        LOG_DURATION(log_filename + "_tbb.txt");
-        lu_tbb::decompose(mat, l, u);
+        LOG_DURATION(log_filename + "_tbb_" + argv[3] + ".txt");
+        lu_tbb::decompose(mat, l, u, nthread);
     }
 }

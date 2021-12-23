@@ -3,12 +3,16 @@
 #include <vector>
 
 #include <tbb/parallel_for.h>
+#include <tbb/global_control.h>
 
 namespace lu_tbb {
 
 void decompose(const std::vector<std::vector<double>>& matrix,
                std::vector<std::vector<double>>& l,
-               std::vector<std::vector<double>>& u) {
+               std::vector<std::vector<double>>& u,
+               int nthread) {
+
+    tbb::global_control global_limit(tbb::global_control::max_allowed_parallelism, nthread);
 
     int n = matrix.size();
 

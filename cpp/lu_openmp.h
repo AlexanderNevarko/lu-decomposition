@@ -7,10 +7,12 @@ namespace lu_openmp {
 
 void decompose(const std::vector<std::vector<double>>& matrix,
                std::vector<std::vector<double>>& l,
-               std::vector<std::vector<double>>& u) {
+               std::vector<std::vector<double>>& u,
+               int nthread) {
 
     int n = matrix.size();
 
+    omp_set_num_threads(nthread);
 #pragma omp parallel shared(matrix,l,u)
 	for(int j = 0; j < n; j++) {
 
