@@ -8,6 +8,7 @@
 
 #include "sequential.h"
 #include "lu_openmp.h"
+#include "lu_tbb.h"
 
 
 int main(int argc, char** argv) {
@@ -39,5 +40,11 @@ int main(int argc, char** argv) {
     {
         LOG_DURATION(log_filename + "_openmp.txt");
         lu_openmp::decompose(mat, l, u);
+    }
+
+    // tbb
+    {
+        LOG_DURATION(log_filename + "_tbb.txt");
+        lu_tbb::decompose(mat, l, u);
     }
 }
